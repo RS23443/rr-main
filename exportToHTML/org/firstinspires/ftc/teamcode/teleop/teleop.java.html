@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>teleop.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+teleop.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firstinspires</span><span class="s2">.</span><span class="s1">ftc</span><span class="s2">.</span><span class="s1">teamcode</span><span class="s2">.</span><span class="s1">teleop</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">dashboard</span><span class="s2">.</span><span class="s1">FtcDashboard</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">dashboard</span><span class="s2">.</span><span class="s1">config</span><span class="s2">.</span><span class="s1">Config</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">acmerobotics</span><span class="s2">.</span><span class="s1">dashboard</span><span class="s2">.</span><span class="s1">telemetry</span><span class="s2">.</span><span class="s1">MultipleTelemetry</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">arcrobotics</span><span class="s2">.</span><span class="s1">ftclib</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">.</span><span class="s1">PIDController</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">eventloop</span><span class="s2">.</span><span class="s1">opmode</span><span class="s2">.</span><span class="s1">LinearOpMode</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">eventloop</span><span class="s2">.</span><span class="s1">opmode</span><span class="s2">.</span><span class="s1">TeleOp</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">CRServo</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">DcMotor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">DcMotorEx</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">DcMotorSimple</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">qualcomm</span><span class="s2">.</span><span class="s1">robotcore</span><span class="s2">.</span><span class="s1">hardware</span><span class="s2">.</span><span class="s1">Servo</span><span class="s2">;</span>
+
+<span class="s1">@Config</span>
+<span class="s1">@TeleOp</span><span class="s2">(</span><span class="s1">name</span><span class="s2">=</span><span class="s3">&quot;main&quot;</span><span class="s2">, </span><span class="s1">group</span><span class="s2">=</span><span class="s3">&quot;LinearOpMode&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">teleop </span><span class="s0">extends </span><span class="s1">LinearOpMode </span><span class="s2">{</span>
+    <span class="s0">private </span><span class="s1">PIDController controller</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">PIDController controller1</span><span class="s2">;</span>
+    <span class="s0">public static double </span><span class="s1">p</span><span class="s2">= </span><span class="s4">0.03</span><span class="s2">, </span><span class="s1">i</span><span class="s2">=</span><span class="s4">0</span><span class="s2">, </span><span class="s1">d</span><span class="s2">=</span><span class="s4">0.0006</span><span class="s2">;</span>
+    <span class="s0">public static double </span><span class="s1">p1 </span><span class="s2">= </span><span class="s4">0.03</span><span class="s2">,</span><span class="s1">i1 </span><span class="s2">= </span><span class="s4">0</span><span class="s2">,</span><span class="s1">d1 </span><span class="s2">= </span><span class="s4">0.0006</span><span class="s2">;</span>
+    <span class="s0">public static double </span><span class="s1">f </span><span class="s2">= </span><span class="s4">0.01</span><span class="s2">;</span>
+    <span class="s0">public static double </span><span class="s1">f1 </span><span class="s2">= </span><span class="s4">0.01</span><span class="s2">;</span>
+    <span class="s0">public static int </span><span class="s1">target </span><span class="s2">= </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s0">private final double </span><span class="s1">ticks_in_degree </span><span class="s2">= </span><span class="s4">537.7 </span><span class="s2">/ </span><span class="s4">180.0</span><span class="s2">;</span>
+    <span class="s0">public </span><span class="s1">DcMotorEx frmotor</span><span class="s2">; </span><span class="s5">// control hub 2</span>
+    <span class="s0">public </span><span class="s1">DcMotorEx brmotor</span><span class="s2">; </span><span class="s5">// control hub 3</span>
+    <span class="s0">public </span><span class="s1">DcMotorEx flmotor</span><span class="s2">; </span><span class="s5">// control hub 0</span>
+    <span class="s0">public </span><span class="s1">DcMotorEx blmotor</span><span class="s2">; </span><span class="s5">//control hub 1</span>
+    <span class="s0">private </span><span class="s1">DcMotorEx leftslide</span><span class="s2">; </span><span class="s5">//exapnsion hub 0</span>
+    <span class="s0">private </span><span class="s1">DcMotorEx rightslide</span><span class="s2">; </span><span class="s5">//expansion hub 1</span>
+
+    <span class="s0">public </span><span class="s1">CRServo intake</span><span class="s2">; </span><span class="s5">// control hub servo 0</span>
+    <span class="s0">public </span><span class="s1">Servo lif</span><span class="s2">; </span><span class="s5">// control hub servo 1</span>
+    <span class="s0">public </span><span class="s1">Servo lext</span><span class="s2">; </span><span class="s5">// control hub servo 2</span>
+    <span class="s0">public </span><span class="s1">Servo lof</span><span class="s2">; </span><span class="s5">// control hub servo 3</span>
+    <span class="s0">public </span><span class="s1">Servo finger</span><span class="s2">; </span><span class="s5">// control hub servo 4</span>
+    <span class="s0">public </span><span class="s1">Servo rif</span><span class="s2">; </span><span class="s5">//expansion hub servo 0</span>
+    <span class="s0">public </span><span class="s1">Servo rext</span><span class="s2">; </span><span class="s5">// expansion hub servo 1</span>
+    <span class="s0">public </span><span class="s1">Servo rof</span><span class="s2">; </span><span class="s5">// expansion hub servo 2</span>
+
+    <span class="s0">public static int </span><span class="s1">pos </span><span class="s2">= </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">x</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">rx</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">y</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">ry</span><span class="s2">;</span>
+
+    <span class="s0">public double </span><span class="s1">denominator</span><span class="s2">;</span>
+    <span class="s0">public double </span><span class="s1">speed </span><span class="s2">= </span><span class="s4">1</span><span class="s2">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">runOpMode</span><span class="s2">() </span><span class="s0">throws </span><span class="s1">InterruptedException </span><span class="s2">{</span>
+        <span class="s1">controller </span><span class="s2">= </span><span class="s0">new </span><span class="s1">PIDController</span><span class="s2">(</span><span class="s1">p</span><span class="s2">, </span><span class="s1">i</span><span class="s2">, </span><span class="s1">d</span><span class="s2">);</span>
+        <span class="s1">telemetry </span><span class="s2">= </span><span class="s0">new </span><span class="s1">MultipleTelemetry</span><span class="s2">(</span><span class="s1">telemetry</span><span class="s2">, </span><span class="s1">FtcDashboard</span><span class="s2">.</span><span class="s1">getInstance</span><span class="s2">().</span><span class="s1">getTelemetry</span><span class="s2">());</span>
+        <span class="s1">controller1 </span><span class="s2">= </span><span class="s0">new </span><span class="s1">PIDController</span><span class="s2">(</span><span class="s1">p1</span><span class="s2">,</span><span class="s1">i1</span><span class="s2">,</span><span class="s1">d1</span><span class="s2">);</span>
+        <span class="s1">leftslide </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;leftslide&quot;</span><span class="s2">);</span>
+        <span class="s1">rightslide </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;rightslide&quot;</span><span class="s2">);</span>
+        <span class="s1">intake </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">CRServo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;intake&quot;</span><span class="s2">);</span>
+        <span class="s1">lif </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">,</span><span class="s3">&quot;left_intake_flip&quot;</span><span class="s2">);</span>
+        <span class="s1">lext </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;left_extension&quot;</span><span class="s2">);</span>
+        <span class="s1">lof </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;left_outtake_flip&quot;</span><span class="s2">);</span>
+        <span class="s1">finger </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;finger&quot;</span><span class="s2">);</span>
+        <span class="s1">rif </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;right_intake_flip&quot;</span><span class="s2">);</span>
+        <span class="s1">rext </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">,</span><span class="s3">&quot;right_extension&quot;</span><span class="s2">);</span>
+        <span class="s1">rof </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">Servo</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;right_outtake-flip&quot;</span><span class="s2">);</span>
+        <span class="s1">frmotor </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;right_front_drive&quot;</span><span class="s2">);</span>
+        <span class="s1">flmotor </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;left_front_drive&quot;</span><span class="s2">);</span>
+        <span class="s1">brmotor </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;right_back_drive&quot;</span><span class="s2">);</span>
+        <span class="s1">blmotor </span><span class="s2">= </span><span class="s1">hardwareMap</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">DcMotorEx</span><span class="s2">.</span><span class="s0">class</span><span class="s2">, </span><span class="s3">&quot;left_back_drive&quot;</span><span class="s2">);</span>
+        <span class="s5">//rightslide.setDirection(DcMotor.Direction.REVERSE);</span>
+        <span class="s5">//brmotor.setDirection(DcMotor.Direction.REVERSE);</span>
+        <span class="s1">flmotor</span><span class="s2">.</span><span class="s1">setDirection</span><span class="s2">(</span><span class="s1">DcMotor</span><span class="s2">.</span><span class="s1">Direction</span><span class="s2">.</span><span class="s1">REVERSE</span><span class="s2">);</span>
+        <span class="s1">blmotor</span><span class="s2">.</span><span class="s1">setDirection</span><span class="s2">(</span><span class="s1">DcMotorSimple</span><span class="s2">.</span><span class="s1">Direction</span><span class="s2">.</span><span class="s1">REVERSE</span><span class="s2">);</span>
+        <span class="s5">//ap.setPosition(0.1);</span>
+
+        <span class="s1">waitForStart</span><span class="s2">();</span>
+        <span class="s0">while </span><span class="s2">(</span><span class="s1">opModeIsActive</span><span class="s2">()) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">left_bumper</span><span class="s2">){</span>
+                <span class="s5">//mo.setPosition(0);</span>
+                <span class="s5">//li.setPosition(0.3);</span>
+                <span class="s5">//ri.setPosition(0.7);</span>
+            <span class="s2">}</span>
+            <span class="s0">if</span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">y</span><span class="s2">){</span>
+                <span class="s5">//mo.setPosition(0.5);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">a</span><span class="s2">) {</span>
+                <span class="s5">//pos = 1;</span>
+                <span class="s1">sleep</span><span class="s2">(</span><span class="s4">200</span><span class="s2">);</span>
+                <span class="s5">//lo.setPosition(0.33);</span>
+                <span class="s5">//ro.setPosition(0.67);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">b</span><span class="s2">) {</span>
+                <span class="s5">//pos = 2;</span>
+                <span class="s5">//lo.setPosition(0.33);</span>
+                <span class="s5">//ro.setPosition(0.67);</span>
+            <span class="s2">}</span>
+            <span class="s0">if</span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">right_bumper</span><span class="s2">){</span>
+
+                <span class="s5">//lo.setPosition(0.02);</span>
+                <span class="s5">//ro.setPosition(0.98);</span>
+                <span class="s1">sleep</span><span class="s2">(</span><span class="s4">200</span><span class="s2">);</span>
+                <span class="s5">//pos = 3;</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad1</span><span class="s2">.</span><span class="s1">left_bumper</span><span class="s2">){</span>
+                <span class="s5">//ap.setPosition(0.6);</span>
+            <span class="s2">}</span>
+            <span class="s5">//one stack</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">dpad_down</span><span class="s2">){</span>
+                <span class="s5">//li.setPosition(0.28);</span>
+                <span class="s5">//ri.setPosition(0.72);</span>
+            <span class="s2">}</span>
+            <span class="s5">//fivestack</span>
+            <span class="s5">//left is side w plane</span>
+            <span class="s5">//right is the motor side (for intake)</span>
+            <span class="s5">//commented out is the old one</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">dpad_up</span><span class="s2">){</span>
+                <span class="s5">//li.setPosition(0.0);</span>
+                <span class="s5">//ri.setPosition(1.0);</span>
+
+            <span class="s2">}</span>
+            <span class="s0">if</span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">dpad_right</span><span class="s2">){</span>
+                   <span class="s5">//ri.setPosition(0.43);</span>
+                   <span class="s5">//li.setPosition(0.59);</span>
+                <span class="s5">//ri.setPosition(0.47);</span>
+                <span class="s5">//li.setPosition(0.71);</span>
+            <span class="s2">}</span>
+            <span class="s0">double </span><span class="s1">speed2 </span><span class="s2">= </span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">right_stick_y</span><span class="s2">;</span>
+            <span class="s1">intake</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">(</span><span class="s4">1.5</span><span class="s2">*-</span><span class="s1">speed2</span><span class="s2">);</span>
+            <span class="s1">rx </span><span class="s2">= </span><span class="s1">gamepad1</span><span class="s2">.</span><span class="s1">right_stick_x</span><span class="s2">;</span>
+            <span class="s1">x </span><span class="s2">= </span><span class="s1">gamepad1</span><span class="s2">.</span><span class="s1">left_stick_x</span><span class="s2">;</span>
+            <span class="s1">y </span><span class="s2">= </span><span class="s1">gamepad1</span><span class="s2">.</span><span class="s1">left_stick_y </span><span class="s2">;</span>
+            <span class="s1">ry </span><span class="s2">= </span><span class="s1">gamepad1</span><span class="s2">.</span><span class="s1">right_stick_y</span><span class="s2">;</span>
+
+            <span class="s1">denominator </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">max</span><span class="s2">(</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">y</span><span class="s2">) + </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">x</span><span class="s2">) + </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">rx</span><span class="s2">), </span><span class="s4">1</span><span class="s2">);</span>
+
+            <span class="s1">flmotor</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">((</span><span class="s1">y</span><span class="s2">+</span><span class="s1">x</span><span class="s2">) / </span><span class="s1">denominator </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+            <span class="s1">blmotor</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">((</span><span class="s1">y</span><span class="s2">-</span><span class="s1">x</span><span class="s2">) / </span><span class="s1">denominator </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+            <span class="s1">frmotor</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">((</span><span class="s1">ry</span><span class="s2">-</span><span class="s1">rx</span><span class="s2">) / </span><span class="s1">denominator </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+            <span class="s1">brmotor</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">((</span><span class="s1">ry</span><span class="s2">+</span><span class="s1">rx</span><span class="s2">) / </span><span class="s1">denominator </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+            <span class="s1">rightslide</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">left_stick_y </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+            <span class="s1">leftslide</span><span class="s2">.</span><span class="s1">setPower</span><span class="s2">(</span><span class="s1">gamepad2</span><span class="s2">.</span><span class="s1">left_stick_y </span><span class="s2">* </span><span class="s1">speed</span><span class="s2">);</span>
+
+
+
+
+
+
+            <span class="s5">/*switch (pos){ 
+                case 1: 
+                    slidePID(100); 
+                    break; 
+                case 2: 
+                    slidePID(0); 
+                    break; 
+                case 3: 
+                    slidePID(1000); 
+                    break; 
+                case 4: 
+                    slidePID(2000); 
+                    break; 
+                case 5: 
+                    slidePID(3000); 
+                    break; 
+            }*/</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+
+
+
+
+<span class="s5">/* 
+    public void slidePID(int target){ 
+ 
+        controller.setPID(p,i,d); 
+        controller1.setPID(p1,i1,d1); 
+        int armPos = leftslide.getCurrentPosition(); 
+        int armPos1 = rightslide.getCurrentPosition(); 
+        double pid = controller.calculate(armPos, target); 
+        double pid1 = controller1.calculate(armPos1, target); 
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f; 
+        double ff1 = Math.cos(Math.toRadians(target /ticks_in_degree)) * f1; 
+        double power = pid + ff; 
+        double power1 = pid1 + ff1; 
+ 
+        leftslide.setPower(power); 
+        rightslide.setPower(power1); 
+ 
+        telemetry.addData(&quot;pos &quot;, armPos); 
+        telemetry.addData(&quot;pos1 &quot;, armPos1); 
+        telemetry.addData(&quot;target &quot;,target); 
+        telemetry.update(); 
+ 
+    } 
+*/</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

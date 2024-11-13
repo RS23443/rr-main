@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>pidfarmTuning.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+pidfarmTuning.java</font>
+</center></td></tr></table>
+<pre>
+<span class="s1">package </span><span class="s0">org</span><span class="s2">.</span><span class="s0">firstinspires</span><span class="s2">.</span><span class="s0">ftc</span><span class="s2">.</span><span class="s0">teamcode</span><span class="s2">.</span><span class="s0">teleop</span><span class="s2">;</span>
+
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">acmerobotics</span><span class="s2">.</span><span class="s0">dashboard</span><span class="s2">.</span><span class="s0">FtcDashboard</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">acmerobotics</span><span class="s2">.</span><span class="s0">dashboard</span><span class="s2">.</span><span class="s0">config</span><span class="s2">.</span><span class="s0">Config</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">acmerobotics</span><span class="s2">.</span><span class="s0">dashboard</span><span class="s2">.</span><span class="s0">telemetry</span><span class="s2">.</span><span class="s0">MultipleTelemetry</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">arcrobotics</span><span class="s2">.</span><span class="s0">ftclib</span><span class="s2">.</span><span class="s0">controller</span><span class="s2">.</span><span class="s0">PIDController</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">qualcomm</span><span class="s2">.</span><span class="s0">robotcore</span><span class="s2">.</span><span class="s0">eventloop</span><span class="s2">.</span><span class="s0">opmode</span><span class="s2">.</span><span class="s0">OpMode</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">qualcomm</span><span class="s2">.</span><span class="s0">robotcore</span><span class="s2">.</span><span class="s0">eventloop</span><span class="s2">.</span><span class="s0">opmode</span><span class="s2">.</span><span class="s0">TeleOp</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">qualcomm</span><span class="s2">.</span><span class="s0">robotcore</span><span class="s2">.</span><span class="s0">hardware</span><span class="s2">.</span><span class="s0">DcMotorEx</span><span class="s2">;</span>
+<span class="s1">import </span><span class="s0">com</span><span class="s2">.</span><span class="s0">qualcomm</span><span class="s2">.</span><span class="s0">robotcore</span><span class="s2">.</span><span class="s0">hardware</span><span class="s2">.</span><span class="s0">DcMotorSimple</span><span class="s2">;</span>
+
+
+<span class="s0">@Config</span>
+<span class="s0">@TeleOp</span><span class="s2">(</span><span class="s0">name</span><span class="s2">=</span><span class="s3">&quot;Pidf Arm tuning&quot;</span><span class="s2">, </span><span class="s0">group</span><span class="s2">=</span><span class="s3">&quot;LinearOpMode&quot;</span><span class="s2">)</span>
+<span class="s1">public class </span><span class="s0">pidfarmTuning </span><span class="s1">extends </span><span class="s0">OpMode </span><span class="s2">{</span>
+    <span class="s1">private </span><span class="s0">PIDController controller</span><span class="s2">;</span>
+
+    <span class="s1">public static double </span><span class="s0">p </span><span class="s2">= </span><span class="s4">0.0178</span><span class="s2">, </span><span class="s0">i </span><span class="s2">= </span><span class="s4">0</span><span class="s2">, </span><span class="s0">d </span><span class="s2">= </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s1">public static double </span><span class="s0">f </span><span class="s2">= </span><span class="s4">0.01</span><span class="s2">;</span>
+
+    <span class="s1">private </span><span class="s0">PIDController controller1</span><span class="s2">;</span>
+
+    <span class="s1">public static double </span><span class="s0">p1 </span><span class="s2">= </span><span class="s4">0.018</span><span class="s2">, </span><span class="s0">i1 </span><span class="s2">= </span><span class="s4">0</span><span class="s2">, </span><span class="s0">d1 </span><span class="s2">= </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s1">public static double </span><span class="s0">f1 </span><span class="s2">= </span><span class="s4">0.01</span><span class="s2">;</span>
+
+    <span class="s1">public static int </span><span class="s0">target </span><span class="s2">= </span><span class="s4">1000</span><span class="s2">;</span>
+
+    <span class="s1">private final double </span><span class="s0">ticks_in_degree </span><span class="s2">= </span><span class="s4">537.7 </span><span class="s2">/ </span><span class="s4">180.0</span><span class="s2">;</span>
+
+    <span class="s1">private </span><span class="s0">DcMotorEx left_slide</span><span class="s2">;</span>
+    <span class="s1">private </span><span class="s0">DcMotorEx right_slide</span><span class="s2">;</span>
+
+
+    <span class="s0">@Override</span>
+    <span class="s1">public void </span><span class="s0">init</span><span class="s2">(){</span>
+        <span class="s0">controller </span><span class="s2">= </span><span class="s1">new </span><span class="s0">PIDController</span><span class="s2">(</span><span class="s0">p</span><span class="s2">,</span><span class="s0">i</span><span class="s2">,</span><span class="s0">d</span><span class="s2">);</span>
+        <span class="s0">controller1 </span><span class="s2">= </span><span class="s1">new </span><span class="s0">PIDController</span><span class="s2">(</span><span class="s0">p1</span><span class="s2">,</span><span class="s0">i1</span><span class="s2">,</span><span class="s0">d1</span><span class="s2">);</span>
+        <span class="s0">telemetry </span><span class="s2">= </span><span class="s1">new </span><span class="s0">MultipleTelemetry</span><span class="s2">(</span><span class="s0">telemetry</span><span class="s2">, </span><span class="s0">FtcDashboard</span><span class="s2">.</span><span class="s0">getInstance</span><span class="s2">().</span><span class="s0">getTelemetry</span><span class="s2">());</span>
+
+
+        <span class="s0">left_slide </span><span class="s2">= </span><span class="s0">hardwareMap</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">DcMotorEx</span><span class="s2">.</span><span class="s1">class</span><span class="s2">, </span><span class="s3">&quot;leftslide&quot;</span><span class="s2">);</span>
+        <span class="s0">right_slide </span><span class="s2">= </span><span class="s0">hardwareMap</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">DcMotorEx</span><span class="s2">.</span><span class="s1">class</span><span class="s2">, </span><span class="s3">&quot;rightslide&quot;</span><span class="s2">);</span>
+        <span class="s0">left_slide</span><span class="s2">.</span><span class="s0">setDirection</span><span class="s2">(</span><span class="s0">DcMotorSimple</span><span class="s2">.</span><span class="s0">Direction</span><span class="s2">.</span><span class="s0">REVERSE</span><span class="s2">);</span>
+        <span class="s0">right_slide</span><span class="s2">.</span><span class="s0">setDirection</span><span class="s2">(</span><span class="s0">DcMotorSimple</span><span class="s2">.</span><span class="s0">Direction</span><span class="s2">.</span><span class="s0">REVERSE</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">@Override</span>
+    <span class="s1">public void </span><span class="s0">loop</span><span class="s2">(){</span>
+        <span class="s0">controller</span><span class="s2">.</span><span class="s0">setPID</span><span class="s2">(</span><span class="s0">p</span><span class="s2">, </span><span class="s0">i</span><span class="s2">, </span><span class="s0">d</span><span class="s2">);</span>
+        <span class="s0">controller1</span><span class="s2">.</span><span class="s0">setPID</span><span class="s2">(</span><span class="s0">p1</span><span class="s2">, </span><span class="s0">i1</span><span class="s2">, </span><span class="s0">d1</span><span class="s2">);</span>
+        <span class="s1">int </span><span class="s0">armPos </span><span class="s2">= </span><span class="s0">left_slide</span><span class="s2">.</span><span class="s0">getCurrentPosition</span><span class="s2">();</span>
+        <span class="s1">int </span><span class="s0">armPos1 </span><span class="s2">= </span><span class="s0">right_slide</span><span class="s2">.</span><span class="s0">getCurrentPosition</span><span class="s2">();</span>
+        <span class="s1">double </span><span class="s0">pid </span><span class="s2">= </span><span class="s0">controller</span><span class="s2">.</span><span class="s0">calculate</span><span class="s2">(</span><span class="s0">armPos</span><span class="s2">, </span><span class="s0">target</span><span class="s2">);</span>
+        <span class="s1">double </span><span class="s0">pid1 </span><span class="s2">= </span><span class="s0">controller1</span><span class="s2">.</span><span class="s0">calculate</span><span class="s2">(</span><span class="s0">armPos1</span><span class="s2">, </span><span class="s0">target</span><span class="s2">);</span>
+        <span class="s1">double </span><span class="s0">ff </span><span class="s2">= </span><span class="s0">Math</span><span class="s2">.</span><span class="s0">cos</span><span class="s2">(</span><span class="s0">Math</span><span class="s2">.</span><span class="s0">toRadians</span><span class="s2">(</span><span class="s0">target </span><span class="s2">/ </span><span class="s0">ticks_in_degree</span><span class="s2">)) * </span><span class="s0">f</span><span class="s2">;</span>
+        <span class="s1">double </span><span class="s0">ff1 </span><span class="s2">= </span><span class="s0">Math</span><span class="s2">.</span><span class="s0">cos</span><span class="s2">(</span><span class="s0">Math</span><span class="s2">.</span><span class="s0">toRadians</span><span class="s2">(</span><span class="s0">target </span><span class="s2">/</span><span class="s0">ticks_in_degree</span><span class="s2">)) * </span><span class="s0">f1</span><span class="s2">;</span>
+        <span class="s1">double </span><span class="s0">power </span><span class="s2">= </span><span class="s0">pid </span><span class="s2">+ </span><span class="s0">ff</span><span class="s2">;</span>
+        <span class="s1">double </span><span class="s0">power1 </span><span class="s2">= </span><span class="s0">pid1 </span><span class="s2">+ </span><span class="s0">ff1</span><span class="s2">;</span>
+
+        <span class="s0">left_slide</span><span class="s2">.</span><span class="s0">setPower</span><span class="s2">(</span><span class="s0">power1</span><span class="s2">);</span>
+        <span class="s0">right_slide</span><span class="s2">.</span><span class="s0">setPower</span><span class="s2">(</span><span class="s0">power1</span><span class="s2">);</span>
+
+        <span class="s0">telemetry</span><span class="s2">.</span><span class="s0">addData</span><span class="s2">(</span><span class="s3">&quot;pos &quot;</span><span class="s2">, </span><span class="s0">armPos</span><span class="s2">);</span>
+        <span class="s0">telemetry</span><span class="s2">.</span><span class="s0">addData</span><span class="s2">(</span><span class="s3">&quot;pos1 &quot;</span><span class="s2">, </span><span class="s0">armPos1</span><span class="s2">);</span>
+        <span class="s0">telemetry</span><span class="s2">.</span><span class="s0">addData</span><span class="s2">(</span><span class="s3">&quot;target &quot;</span><span class="s2">,</span><span class="s0">target</span><span class="s2">);</span>
+        <span class="s0">telemetry</span><span class="s2">.</span><span class="s0">update</span><span class="s2">();</span>
+
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+</pre>
+</body>
+</html>
